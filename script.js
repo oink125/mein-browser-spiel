@@ -36,3 +36,15 @@ document.addEventListener("DOMContentLoaded", function () {
         animate();
     }
 });
+
+// Weiße Mittelstreifen erstellen (dünne lange Rechtecke)
+const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10); // Schmale und lange Streifen
+const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Weiß
+
+// Mehrere Streifen auf der Straße platzieren
+for (let i = -50; i < 50; i += 20) { // Streifen alle 20 Einheiten setzen
+    const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+    stripe.position.set(0, 0.05, i); // In der Mitte der Straße
+    scene.add(stripe);
+}
+
