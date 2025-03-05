@@ -3,3 +3,28 @@ const ctx = canvas.getContext("2d");
 
 ctx.fillStyle = "blue";
 ctx.fillRect(100, 100, 50, 50); // Zeichnet ein blaues Quadrat
+
+const startButton = document.getElementById("startButton");
+const settingsButton = document.getElementById("settingsButton");
+const menu = document.getElementById("menu");
+const canvas = document.getElementById("gameCanvas");
+
+startButton.addEventListener("click", startGame);
+settingsButton.addEventListener("click", openSettings);
+
+function startGame() {
+    menu.style.display = "none";  // Menü ausblenden
+    canvas.style.display = "block";  // Canvas sichtbar machen
+    startCarGame(); // Hier startet das eigentliche Spiel
+}
+
+function openSettings() {
+    alert("Einstellungen sind noch nicht implementiert.");
+}
+
+// Platzhalter-Funktion für das spätere Spiel
+function startCarGame() {
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "green";
+    ctx.fillRect(350, 500, 100, 50); // Ein einfaches grünes Auto als Start
+}
