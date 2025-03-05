@@ -1,37 +1,38 @@
-const startButton = document.getElementById("startButton");
-const settingsButton = document.getElementById("settingsButton");
-const menu = document.getElementById("menu");
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+document.addEventListener("DOMContentLoaded", function () {
+    const startButton = document.getElementById("startButton");
+    const menu = document.getElementById("menu");
+    const gameContainer = document.getElementById("gameContainer");
+    
+    startButton.addEventListener("click", function () {
+        menu.style.display = "none"; // Menü ausblenden
+        gameContainer.style.display = "block"; // Spiel anzeigen
+        startGame();
+    });
 
-startButton.addEventListener("click", startGame);
-settingsButton.addEventListener("click", openSettings);
+    function startGame() {
+        // Erstelle eine 3D-Szene mit Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        gameContainer.appendChild(renderer.domElement);
 
-function startGame() {
-    menu.style.display = "none";  // Menü ausblenden
-    canvas.style.display = "block";  // Spiel sichtbar machen
-    drawRoad(); // Straße zeichnen
-}
+        // Eine einfache Straße (graues Rechteck)
+        const roadGeometry = new THREE.PlaneGeometry(10, 50);
+        const roadMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 });
+        const road = new THREE.Mesh(roadGeometry, roadMaterial);
+        road.rotation.x = -Math.PI / 2;
+        scene.add(road);
 
-function openSettings() {
-    alert("Einstellungen sind noch nicht implementiert.");
-}
+        // Eine einfache Kamera-Position
+        camera.position.z = 10;
+        camera.position.y = 5;
+        camera.lookAt(0, 0, 0);
 
-function drawRoad() {
-    // Hintergrund (Gras/Bürgersteig)
-    ctx.fillStyle = "green";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Straße (graue Fahrbahn in der Mitte)
-    ctx.fillStyle = "gray";
-    ctx.fillRect(250, 0, 300, canvas.height);
-
-    // Mittellinien (weiße Striche)
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 5;
-    ctx.setLineDash([20, 20]); // Strichelinie: 20px Linie, 20px Lücke
-    ctx.beginPath();
-    ctx.moveTo(400, 0);
-    ctx.lineTo(400, canvas.height);
-    ctx.stroke();
-}
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+});
