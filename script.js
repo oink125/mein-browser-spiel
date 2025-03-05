@@ -48,3 +48,16 @@ for (let i = -50; i < 50; i += 20) { // Streifen alle 20 Einheiten setzen
     scene.add(stripe);
 }
 
+// Bürgersteige erstellen (graue Rechtecke an den Rändern)
+const sidewalkGeometry = new THREE.BoxGeometry(10, 0.2, 200); // 10 breit, dünn, lang
+const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 }); // Grau
+
+// Linker Bürgersteig
+const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+leftSidewalk.position.set(-10, 0.1, 0); // Links neben der Straße
+scene.add(leftSidewalk);
+
+// Rechter Bürgersteig
+const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+rightSidewalk.position.set(10, 0.1, 0); // Rechts neben der Straße
+scene.add(rightSidewalk);
