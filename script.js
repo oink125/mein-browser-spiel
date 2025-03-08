@@ -42,6 +42,10 @@ scene.add(street);
 // Weiße Mittelstreifen erstellen
 const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10); // Dünn und lang
 const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Weiß
+const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+stripe.position.set(0, 0.05, 0); // Etwas über der Straße platzieren
+scene.add(stripe);
+
 
 // Mehrere Streifen auf der Straße platzieren
 for (let i = -90; i < 100; i += 20) { // Startet bei -90, geht bis 100
