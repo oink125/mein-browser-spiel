@@ -2,6 +2,8 @@ const scene = new THREE.Scene(); // Szene global definieren
 let car; // Globale Variable für das Auto
 let carSpeed = 0; // Geschwindigkeit
 let carTurnSpeed = 0; // Drehgeschwindigkeit
+let camera; // Kamera global definieren
+let renderer; // Renderer global definieren
 
 document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("startButton");
@@ -15,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function startGame() {
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         gameContainer.appendChild(renderer.domElement);
 
@@ -43,16 +45,25 @@ document.addEventListener("DOMContentLoaded", function () {
         car.add(carRoof);
         scene.add(car);
 
-        // Kamera-Position
-        camera.position.set(0, 5, 10);
+        // Kamera hinter das Auto setzen
+        camera.position.set(0, 3, 8);
         camera.lookAt(car.position);
 
         function animate() {
             requestAnimationFrame(animate);
 
             // 🚗 **Auto bewegen**
-            car.position.z -= carSpeed; // Vorwärts/Rückwärts bewegen
+            car.position.z -= Math.cos(car.rotation.y) * carSpeed; // Vorwärts/Rückwärts
+            car.position.x -= Math.sin(car.rotation.y) * carSpeed; // Seitliche Bewegung
             car.rotation.y += carTurnSpeed; // Links/Rechts drehen
+
+            // 🎥 **Kamera bleibt hinter dem Auto**
+            camera.position.set(
+                car.position.x - Math.sin(car.rotation.y) * 8,
+                car.position.y + 3,
+                car.position.z - Math.cos(car.rotation.y) * 8
+            );
+            camera.lookAt(car.position);
 
             renderer.render(scene, camera);
         }
@@ -60,8 +71,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 🎮 **Tastensteuerung**
+// 🎮 **Tastensteuerung (Scroll verhindern!)**
 document.addEventListener("keydown", function (event) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        event.preventDefault(); // Verhindert Scrollen
+    }
     if (event.key === "ArrowUp") carSpeed = 0.2; // Vorwärts
     if (event.key === "ArrowDown") carSpeed = -0.2; // Rückwärts
     if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // Links drehen
@@ -69,7 +83,6 @@ document.addEventListener("keydown", function (event) {
 });
 
 document.addEventListener("keyup", function (event) {
-    if (event.key === "ArrowUp" || event.key === "ArrowDown") carSpeed = 0;
-    if (event.key === "ArrowLeft" || event.key === "ArrowRight") carTurnSpeed = 0;
+    if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
+    if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
-
