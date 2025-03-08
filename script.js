@@ -49,8 +49,9 @@ scene.add(stripe);
 
 // Mehrere Streifen auf der Straße platzieren
 for (let i = -90; i < 100; i += 20) { // Startet bei -90, geht bis 100
+    for (let i = -90; i < 100; i += 20) {  
     const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
-    stripe.position.set(0, 0.06, i); // Leicht über der Straße (0.06)
+    stripe.position.set(0, 0.06, i);  
     scene.add(stripe);
 }
 
