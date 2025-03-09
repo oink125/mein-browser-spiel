@@ -1,3 +1,5 @@
+import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
+
 const scene = new THREE.Scene(); // Szene global definieren
 let car; // Globale Variable für das Auto
 let carSpeed = 0; // Geschwindigkeit
@@ -29,41 +31,37 @@ document.addEventListener("DOMContentLoaded", function () {
         street.position.set(0, 0, 0);
         scene.add(street);
 
-        // 🚗 **Auto erstellen**  
-        const carBodyGeometry = new THREE.BoxGeometry(2, 1, 4);
-        const carBodyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const carBody = new THREE.Mesh(carBodyGeometry, carBodyMaterial);
-        carBody.position.set(0, 0.6, 0);
-
-        const carRoofGeometry = new THREE.BoxGeometry(1.5, 0.6, 2);
-        const carRoofMaterial = new THREE.MeshBasicMaterial({ color: 0x990000 });
-        const carRoof = new THREE.Mesh(carRoofGeometry, carRoofMaterial);
-        carRoof.position.set(0, 1.2, 0);
-
-        car = new THREE.Group();
-        car.add(carBody);
-        car.add(carRoof);
-        scene.add(car);
+        // 3D Auto-Modell laden
+        const loader = new GLTFLoader();
+        loader.load('models/car.glb', function (gltf) {
+            car = gltf.scene;
+            car.scale.set(1, 1, 1);
+            car.position.set(0, 0.2, 0);
+            scene.add(car);
+        }, undefined, function (error) {
+            console.error('Fehler beim Laden des Autos:', error);
+        });
 
         // Kamera hinter das Auto setzen
         camera.position.set(0, 3, 8);
-        camera.lookAt(car.position);
+        camera.lookAt(0, 0, 0);
 
         function animate() {
             requestAnimationFrame(animate);
 
-            // 🚗 **Auto bewegen**
-            car.position.z -= Math.cos(car.rotation.y) * carSpeed; // Vorwärts/Rückwärts
-            car.position.x -= Math.sin(car.rotation.y) * carSpeed; // Seitliche Bewegung
-            car.rotation.y += carTurnSpeed; // Links/Rechts drehen
+            if (car) {
+                car.position.z -= Math.cos(car.rotation.y) * carSpeed;
+                car.position.x -= Math.sin(car.rotation.y) * carSpeed;
+                car.rotation.y += carTurnSpeed;
 
-            // 🎥 **Kamera bleibt hinter dem Auto**
-            camera.position.set(
-                car.position.x - Math.sin(car.rotation.y) * 8,
-                car.position.y + 3,
-                car.position.z - Math.cos(car.rotation.y) * 8
-            );
-            camera.lookAt(car.position);
+                // Kamera folgt dem Auto
+                camera.position.set(
+                    car.position.x - Math.sin(car.rotation.y) * 8,
+                    car.position.y + 3,
+                    car.position.z - Math.cos(car.rotation.y) * 8
+                );
+                camera.lookAt(car.position);
+            }
 
             renderer.render(scene, camera);
         }
@@ -71,18 +69,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 🎮 **Tastensteuerung (Scroll verhindern!)**
+// Tastensteuerung (Scroll verhindern!)
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-        event.preventDefault(); // Verhindert Scrollen
+        event.preventDefault();
     }
-    if (event.key === "ArrowUp") carSpeed = 0.2; // Vorwärts
-    if (event.key === "ArrowDown") carSpeed = -0.2; // Rückwärts
-    if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // Links drehen
-    if (event.key === "ArrowRight") carTurnSpeed = -0.05; // Rechts drehen
+    if (event.key === "ArrowUp") carSpeed = 0.2;
+    if (event.key === "ArrowDown") carSpeed = -0.2;
+    if (event.key === "ArrowLeft") carTurnSpeed = 0.05;
+    if (event.key === "ArrowRight") carTurnSpeed = -0.05;
 });
 
 document.addEventListener("keyup", function (event) {
     if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
+
