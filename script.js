@@ -85,3 +85,22 @@ document.addEventListener("keyup", function (event) {
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
 
+
+ const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
+        const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        for (let i = -90; i < 100; i += 20) {
+            const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+            stripe.position.set(0, 0.06, i);
+            scene.add(stripe);
+        }
+
+const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
+const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+
+const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+leftSidewalk.position.set(-12.5, 0.05, 0);
+scene.add(leftSidewalk);
+
+const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+rightSidewalk.position.set(12.5, 0.05, 0);
+scene.add(rightSidewalk);
