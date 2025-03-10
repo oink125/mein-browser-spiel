@@ -1,49 +1,45 @@
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
-let scene, camera, renderer, car;
-let carSpeed = 0; // Geschwindigkeit
-let carTurnSpeed = 0; // Drehgeschwindigkeit
+let scene, camera, renderer;
+let car, carSpeed = 0, carTurnSpeed = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
-    const startButton = document.getElementById("startButton");
-    const menu = document.getElementById("menu");
-    const gameContainer = document.getElementById("gameContainer");
-
-    startButton.addEventListener("click", function () {
-        menu.style.display = "none"; // Menü ausblenden
-        gameContainer.style.display = "block"; // Spiel anzeigen
-        startGame();
-    });
+    document.getElementById("startButton").addEventListener("click", startGame);
 });
 
 function startGame() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("gameContainer").style.display = "block";
+
+    initScene();
+    loadCar();
+    animate();
+}
+
+function initScene() {
     scene = new THREE.Scene();
-
-   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10); // Kamera höher, damit das Auto sichtbar ist
+    
+    // Kamera höher setzen
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("gameContainer").appendChild(renderer.domElement);
 
-    // Renderer erstellen
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById("gameContainer").appendChild(renderer.domElement);
-
-    // Licht hinzufügen
+    // Licht
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5, 10, 5);
     scene.add(light);
 
-    // Straße erstellen
+    // Straße
     const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
-    const streetMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
+    const streetMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
     const street = new THREE.Mesh(streetGeometry, streetMaterial);
-    street.position.set(0, 0, 0);
     scene.add(street);
 
-    // Mittelstreifen hinzufügen
+    // Mittelstreifen
     const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     for (let i = -90; i < 100; i += 20) {
@@ -52,45 +48,43 @@ function startGame() {
         scene.add(stripe);
     }
 
-    // Gehwege hinzufügen
+    // Gehwege
     const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
-    const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
-
+    const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
+    
     const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     leftSidewalk.position.set(-12.5, 0.05, 0);
     scene.add(leftSidewalk);
-
+    
     const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
+}
 
-    // Auto-Modell laden
+function loadCar() {
     const loader = new GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
-        car.scale.set(0.5, 0.5, 0.5); // Skalierung verkleinert, falls Modell zu groß ist
-        car.position.set(0, 0.15, 0); // Auto genau auf die Straße setzen
+        car.scale.set(0.5, 0.5, 0.5);
+        car.position.set(0, 0.2, 0);
         scene.add(car);
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
     });
-
-    animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
-        // 🔄 Korrigierte Steuerung
-        car.position.z += Math.sin(car.rotation.y) * carSpeed;
-        car.position.x -= Math.cos(car.rotation.y) * carSpeed;
+        car.position.z += Math.cos(car.rotation.y) * carSpeed;
+        car.position.x += Math.sin(car.rotation.y) * carSpeed;
         car.rotation.y += carTurnSpeed;
 
         // Kamera folgt dem Auto
         camera.position.set(
             car.position.x - Math.sin(car.rotation.y) * 8,
-            car.position.y + 3,
+            car.position.y + 5,
             car.position.z - Math.cos(car.rotation.y) * 8
         );
         camera.lookAt(car.position);
