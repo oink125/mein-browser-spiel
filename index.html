@@ -4,43 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autospiel</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js" defer></script>
-    <style> body { text-align: center; font-family: Arial, sans-serif; } </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-</head>
-<body>
-    <h1>Mein erstes Browser-Spiel</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-</body>
-</html>
 
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autospiel</title>
-    <script defer src="script.js"></script>
+    <!-- Three.js und GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- Hauptskript (wird nach dem Laden der Seite ausgeführt) -->
+    <script src="script.js" defer></script>
+
     <style>
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #ddd;
+            margin: 0;
+            overflow: hidden; /* Verhindert Scrollen während des Spiels */
         }
+
         #menu {
             display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        #gameCanvas {
+
+        #gameContainer {
             display: none;
-            border: 2px solid black;
-            background-color: #a0d2eb; /* Himmelblau als Platzhalter für die Stadt */
+            width: 100vw;
+            height: 100vh;
         }
+
         button {
             font-size: 20px;
             padding: 10px 20px;
             margin: 10px;
             cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #218838;
         }
     </style>
 </head>
@@ -51,13 +63,8 @@
         <button id="startButton">Spiel starten</button>
         <button id="settingsButton">Einstellungen</button>
     </div>
-<div id="gameContainer" style="display: none;"></div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div id="gameContainer"></div>
 
 </body>
 </html>
-
-<script type="module" src="script.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
-<script src="script.js"></script>
