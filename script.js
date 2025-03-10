@@ -20,29 +20,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function startGame() {
     scene = new THREE.Scene();
-
-    // Kamera höher setzen
+    
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-   camera.position.set(0, 3, -6); // Kamera höher & weiter hinten
-camera.lookAt(0, 1.5, 0); // Blick leicht nach unten
-
+    camera.position.set(0, 5, -10); // Höher und weiter hinten
+    camera.lookAt(0, 1.5, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("gameContainer").appendChild(renderer.domElement);
 
-    // Licht
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5, 10, 5);
     scene.add(light);
 
-    // Straße
     const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
     const streetMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
     const street = new THREE.Mesh(streetGeometry, streetMaterial);
     scene.add(street);
 
-    // Mittelstreifen
     const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     for (let i = -90; i < 100; i += 20) {
@@ -51,7 +46,6 @@ camera.lookAt(0, 1.5, 0); // Blick leicht nach unten
         scene.add(stripe);
     }
 
-    // Gehwege
     const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
     const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
     
@@ -63,14 +57,13 @@ camera.lookAt(0, 1.5, 0); // Blick leicht nach unten
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
 
-    // Auto laden (!!! KEIN IMPORT, sondern direkt die THREE.GLTFLoader()-Klasse nutzen)
-    console.log("Auto geladen:", car.position);
     const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
         car.scale.set(0.5, 0.5, 0.5);
-        car.position.set(0, 0.1, 0); // Auto näher am Boden
+        car.position.set(0, 0.1, 0);
         scene.add(car);
+        console.log("Auto erfolgreich geladen:", car.position);
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
     });
@@ -87,17 +80,16 @@ function animate() {
         car.rotation.y += carTurnSpeed;
 
         camera.position.set(
-    car.position.x - Math.sin(car.rotation.y) * 4,
-    car.position.y + 2.5, // Kamera höher setzen
-    car.position.z - Math.cos(car.rotation.y) * 4
-);
-camera.lookAt(car.position.x, car.position.y + 1.5, car.position.z);
-
-
+            car.position.x - Math.sin(car.rotation.y) * 4,
+            car.position.y + 3, // Kamera höher setzen
+            car.position.z - Math.cos(car.rotation.y) * 6
+        );
+        camera.lookAt(car.position.x, car.position.y + 1.5, car.position.z);
+    }
+    
     renderer.render(scene, camera);
 }
 
-// Steuerung
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault();
