@@ -1,10 +1,8 @@
-// Three.js aus CDN laden (KEIN import nötig!)
-const scene = new THREE.Scene();
-let car;
-let carSpeed = 0;
-let carTurnSpeed = 0;
-let camera;
-let renderer;
+import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
+
+let scene, camera, renderer, car;
+let carSpeed = 0; // Geschwindigkeit
+let carTurnSpeed = 0; // Drehgeschwindigkeit
 
 document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("startButton");
@@ -12,59 +10,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const gameContainer = document.getElementById("gameContainer");
 
     startButton.addEventListener("click", function () {
-        menu.style.display = "none";
-        gameContainer.style.display = "block";
+        menu.style.display = "none"; // Menü ausblenden
+        gameContainer.style.display = "block"; // Spiel anzeigen
         startGame();
     });
-
-    function startGame() {
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        gameContainer.appendChild(renderer.domElement);
-
-        // Szene, Straße, Mittellinien & Bürgersteige hinzufügen
-        createEnvironment();
-
-        // 3D Auto-Modell laden
-        const loader = new THREE.GLTFLoader();
-        loader.load("models/car.glb", function (gltf) {
-            car = gltf.scene;
-            car.scale.set(1, 1, 1);
-            car.position.set(0, 0.2, 0);
-            scene.add(car);
-        }, undefined, function (error) {
-            console.error("Fehler beim Laden des Autos:", error);
-        });
-
-        // Kamera hinter das Auto setzen
-        camera.position.set(0, 3, 8);
-        camera.lookAt(0, 0, 0);
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (car) {
-                car.position.z -= Math.cos(car.rotation.y) * carSpeed;
-                car.position.x -= Math.sin(car.rotation.y) * carSpeed;
-                car.rotation.y += carTurnSpeed;
-
-                // Kamera folgt dem Auto
-                camera.position.set(
-                    car.position.x - Math.sin(car.rotation.y) * 8,
-                    car.position.y + 3,
-                    car.position.z - Math.cos(car.rotation.y) * 8
-                );
-                camera.lookAt(car.position);
-            }
-
-            renderer.render(scene, camera);
-        }
-        animate();
-    }
 });
 
-function createEnvironment() {
+function startGame() {
+    scene = new THREE.Scene();
+
+    // Kamera setzen
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10); // Kamera leicht erhöht hinter dem Auto
+
+    // Renderer erstellen
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("gameContainer").appendChild(renderer.domElement);
+
+    // Licht hinzufügen
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 5);
+    scene.add(light);
+
     // Straße erstellen
     const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
     const streetMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
@@ -72,7 +40,7 @@ function createEnvironment() {
     street.position.set(0, 0, 0);
     scene.add(street);
 
-    // Mittellinien
+    // Mittelstreifen hinzufügen
     const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     for (let i = -90; i < 100; i += 20) {
@@ -81,7 +49,7 @@ function createEnvironment() {
         scene.add(stripe);
     }
 
-    // Bürgersteige
+    // Gehwege hinzufügen
     const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
     const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
 
@@ -92,20 +60,55 @@ function createEnvironment() {
     const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
+
+    // Auto-Modell laden
+    const loader = new GLTFLoader();
+    loader.load('models/car.glb', function (gltf) {
+        car = gltf.scene;
+        car.scale.set(1, 1, 1);
+        car.position.set(0, 0.15, 0); // Auto auf der Straße platzieren
+        scene.add(car);
+    }, undefined, function (error) {
+        console.error('Fehler beim Laden des Autos:', error);
+    });
+
+    animate();
 }
 
-// Tastensteuerung (Scroll verhindern!)
+function animate() {
+    requestAnimationFrame(animate);
+
+    if (car) {
+        // Bewegung basierend auf der Rotation berechnen
+        car.position.z += Math.cos(car.rotation.y) * carSpeed;
+        car.position.x += Math.sin(car.rotation.y) * carSpeed;
+        car.rotation.y += carTurnSpeed;
+
+        // Kamera folgt dem Auto
+        camera.position.set(
+            car.position.x - Math.sin(car.rotation.y) * 8,
+            car.position.y + 3,
+            car.position.z - Math.cos(car.rotation.y) * 8
+        );
+        camera.lookAt(car.position);
+    }
+
+    renderer.render(scene, camera);
+}
+
+// Tastatursteuerung
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault();
     }
-    if (event.key === "ArrowUp") carSpeed = 0.2;
-    if (event.key === "ArrowDown") carSpeed = -0.2;
-    if (event.key === "ArrowLeft") carTurnSpeed = 0.05;
-    if (event.key === "ArrowRight") carTurnSpeed = -0.05;
+    if (event.key === "ArrowUp") carSpeed = 0.2; // Auto vorwärts
+    if (event.key === "ArrowDown") carSpeed = -0.1; // Auto rückwärts
+    if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // Auto nach links drehen
+    if (event.key === "ArrowRight") carTurnSpeed = -0.05; // Auto nach rechts drehen
 });
 
 document.addEventListener("keyup", function (event) {
     if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
+
