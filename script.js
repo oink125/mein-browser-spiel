@@ -19,9 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
 function startGame() {
     scene = new THREE.Scene();
 
-    // Kamera setzen
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 3, 8); // Kamera leicht erhöht hinter dem Auto
+   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10); // Kamera höher, damit das Auto sichtbar ist
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("gameContainer").appendChild(renderer.domElement);
 
     // Renderer erstellen
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -96,15 +99,15 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// 🎮 Tastatursteuerung
+// Steuerung
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault();
     }
-    if (event.key === "ArrowUp") carSpeed = 0.2; // 🔥 Vorwärts
-    if (event.key === "ArrowDown") carSpeed = -0.2; // 🔄 Rückwärts
-    if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // ↩ Links drehen
-    if (event.key === "ArrowRight") carTurnSpeed = -0.05; // ↪ Rechts drehen
+    if (event.key === "ArrowUp") carSpeed = 0.2;
+    if (event.key === "ArrowDown") carSpeed = -0.2;
+    if (event.key === "ArrowLeft") carTurnSpeed = 0.05;
+    if (event.key === "ArrowRight") carTurnSpeed = -0.05;
 });
 
 document.addEventListener("keyup", function (event) {
