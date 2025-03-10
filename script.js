@@ -1,11 +1,10 @@
-import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
-
-const scene = new THREE.Scene(); // Szene global definieren
-let car; // Globale Variable für das Auto
-let carSpeed = 0; // Geschwindigkeit
-let carTurnSpeed = 0; // Drehgeschwindigkeit
-let camera; // Kamera global definieren
-let renderer; // Renderer global definieren
+// Three.js aus CDN laden (KEIN import nötig!)
+const scene = new THREE.Scene();
+let car;
+let carSpeed = 0;
+let carTurnSpeed = 0;
+let camera;
+let renderer;
 
 document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("startButton");
@@ -13,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const gameContainer = document.getElementById("gameContainer");
 
     startButton.addEventListener("click", function () {
-        menu.style.display = "none"; // Menü ausblenden
-        gameContainer.style.display = "block"; // Spiel anzeigen
+        menu.style.display = "none";
+        gameContainer.style.display = "block";
         startGame();
     });
 
@@ -24,22 +23,18 @@ document.addEventListener("DOMContentLoaded", function () {
         renderer.setSize(window.innerWidth, window.innerHeight);
         gameContainer.appendChild(renderer.domElement);
 
-        // Straße erstellen
-        const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
-        const streetMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
-        const street = new THREE.Mesh(streetGeometry, streetMaterial);
-        street.position.set(0, 0, 0);
-        scene.add(street);
+        // Szene, Straße, Mittellinien & Bürgersteige hinzufügen
+        createEnvironment();
 
         // 3D Auto-Modell laden
-        const loader = new GLTFLoader();
-        loader.load('models/car.glb', function (gltf) {
+        const loader = new THREE.GLTFLoader();
+        loader.load("models/car.glb", function (gltf) {
             car = gltf.scene;
             car.scale.set(1, 1, 1);
             car.position.set(0, 0.2, 0);
             scene.add(car);
         }, undefined, function (error) {
-            console.error('Fehler beim Laden des Autos:', error);
+            console.error("Fehler beim Laden des Autos:", error);
         });
 
         // Kamera hinter das Auto setzen
@@ -69,6 +64,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+function createEnvironment() {
+    // Straße erstellen
+    const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
+    const streetMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 });
+    const street = new THREE.Mesh(streetGeometry, streetMaterial);
+    street.position.set(0, 0, 0);
+    scene.add(street);
+
+    // Mittellinien
+    const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
+    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    for (let i = -90; i < 100; i += 20) {
+        const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+        stripe.position.set(0, 0.06, i);
+        scene.add(stripe);
+    }
+
+    // Bürgersteige
+    const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
+    const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+
+    const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    leftSidewalk.position.set(-12.5, 0.05, 0);
+    scene.add(leftSidewalk);
+
+    const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    rightSidewalk.position.set(12.5, 0.05, 0);
+    scene.add(rightSidewalk);
+}
+
 // Tastensteuerung (Scroll verhindern!)
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
@@ -84,23 +109,3 @@ document.addEventListener("keyup", function (event) {
     if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
-
-
- const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
-        const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        for (let i = -90; i < 100; i += 20) {
-            const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
-            stripe.position.set(0, 0.06, i);
-            scene.add(stripe);
-        }
-
-const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
-const sidewalkMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
-
-const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
-leftSidewalk.position.set(-12.5, 0.05, 0);
-scene.add(leftSidewalk);
-
-const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
-rightSidewalk.position.set(12.5, 0.05, 0);
-scene.add(rightSidewalk);
