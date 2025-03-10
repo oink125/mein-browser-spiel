@@ -1,5 +1,3 @@
-// THREE.js über ein <script> Tag in index.html laden, deshalb kein Import nötig
-
 let scene, camera, renderer;
 let car, carSpeed = 0, carTurnSpeed = 0;
 
@@ -63,7 +61,7 @@ function startGame() {
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
 
-    // Auto laden
+    // Auto laden (!!! KEIN IMPORT, sondern direkt die THREE.GLTFLoader()-Klasse nutzen)
     const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
@@ -112,3 +110,4 @@ document.addEventListener("keyup", function (event) {
     if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
+
