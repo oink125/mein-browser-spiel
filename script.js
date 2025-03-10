@@ -1,25 +1,28 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js';
-import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
+// THREE.js über ein <script> Tag in index.html laden, deshalb kein Import nötig
 
 let scene, camera, renderer;
 let car, carSpeed = 0, carTurnSpeed = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("startButton").addEventListener("click", startGame);
+    const startButton = document.getElementById("startButton");
+    const settingsButton = document.getElementById("settingsButton");
+    const menu = document.getElementById("menu");
+    const gameContainer = document.getElementById("gameContainer");
+
+    startButton.addEventListener("click", function () {
+        menu.style.display = "none";
+        gameContainer.style.display = "block";
+        startGame();
+    });
+
+    settingsButton.addEventListener("click", function () {
+        alert("Einstellungen sind noch nicht verfügbar!");
+    });
 });
 
 function startGame() {
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("gameContainer").style.display = "block";
-
-    initScene();
-    loadCar();
-    animate();
-}
-
-function initScene() {
     scene = new THREE.Scene();
-    
+
     // Kamera höher setzen
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 5, 10);
@@ -59,10 +62,9 @@ function initScene() {
     const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
-}
 
-function loadCar() {
-    const loader = new GLTFLoader();
+    // Auto laden
+    const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
         car.scale.set(0.5, 0.5, 0.5);
@@ -71,6 +73,8 @@ function loadCar() {
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
     });
+
+    animate();
 }
 
 function animate() {
