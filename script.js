@@ -64,6 +64,7 @@ camera.lookAt(0, 1.5, 0); // Blick leicht nach unten
     scene.add(rightSidewalk);
 
     // Auto laden (!!! KEIN IMPORT, sondern direkt die THREE.GLTFLoader()-Klasse nutzen)
+    console.log("Auto geladen:", car.position);
     const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
