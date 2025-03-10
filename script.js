@@ -23,7 +23,9 @@ function startGame() {
 
     // Kamera höher setzen
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10);
+   camera.position.set(0, 3, -6); // Kamera höher & weiter hinten
+camera.lookAt(0, 1.5, 0); // Blick leicht nach unten
+
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -83,14 +85,13 @@ function animate() {
         car.position.x += Math.sin(car.rotation.y) * carSpeed;
         car.rotation.y += carTurnSpeed;
 
-        // Kamera folgt dem Auto
         camera.position.set(
-            car.position.x - Math.sin(car.rotation.y) * 8,
-            car.position.y + 5,
-            car.position.z - Math.cos(car.rotation.y) * 8
-        );
-        camera.lookAt(car.position);
-    }
+    car.position.x - Math.sin(car.rotation.y) * 4,
+    car.position.y + 2.5, // Kamera höher setzen
+    car.position.z - Math.cos(car.rotation.y) * 4
+);
+camera.lookAt(car.position.x, car.position.y + 1.5, car.position.z);
+
 
     renderer.render(scene, camera);
 }
