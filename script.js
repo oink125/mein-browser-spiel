@@ -66,7 +66,7 @@ function startGame() {
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
         car.scale.set(0.5, 0.5, 0.5);
-        car.position.set(0, 0.2, 0);
+        car.position.set(0, 0.1, 0); // Auto näher am Boden
         scene.add(car);
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
