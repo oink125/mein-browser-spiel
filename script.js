@@ -21,10 +21,10 @@ function startGame() {
 
     // Kamera setzen
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10); // Kamera leicht erhöht hinter dem Auto
+    camera.position.set(0, 3, 8); // Kamera leicht erhöht hinter dem Auto
 
     // Renderer erstellen
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("gameContainer").appendChild(renderer.domElement);
 
@@ -65,8 +65,8 @@ function startGame() {
     const loader = new GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
-        car.scale.set(1, 1, 1);
-        car.position.set(0, 0.15, 0); // Auto auf der Straße platzieren
+        car.scale.set(0.5, 0.5, 0.5); // Skalierung verkleinert, falls Modell zu groß ist
+        car.position.set(0, 0.15, 0); // Auto genau auf die Straße setzen
         scene.add(car);
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
@@ -79,9 +79,9 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
-        // Bewegung basierend auf der Rotation berechnen
-        car.position.z += Math.cos(car.rotation.y) * carSpeed;
-        car.position.x += Math.sin(car.rotation.y) * carSpeed;
+        // 🔄 Korrigierte Steuerung
+        car.position.z += Math.sin(car.rotation.y) * carSpeed;
+        car.position.x -= Math.cos(car.rotation.y) * carSpeed;
         car.rotation.y += carTurnSpeed;
 
         // Kamera folgt dem Auto
@@ -96,19 +96,18 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// Tastatursteuerung
+// 🎮 Tastatursteuerung
 document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault();
     }
-    if (event.key === "ArrowUp") carSpeed = 0.2; // Auto vorwärts
-    if (event.key === "ArrowDown") carSpeed = -0.1; // Auto rückwärts
-    if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // Auto nach links drehen
-    if (event.key === "ArrowRight") carTurnSpeed = -0.05; // Auto nach rechts drehen
+    if (event.key === "ArrowUp") carSpeed = 0.2; // 🔥 Vorwärts
+    if (event.key === "ArrowDown") carSpeed = -0.2; // 🔄 Rückwärts
+    if (event.key === "ArrowLeft") carTurnSpeed = 0.05; // ↩ Links drehen
+    if (event.key === "ArrowRight") carTurnSpeed = -0.05; // ↪ Rechts drehen
 });
 
 document.addEventListener("keyup", function (event) {
     if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
 });
-
