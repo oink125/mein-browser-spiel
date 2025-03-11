@@ -40,10 +40,14 @@ const pointLight = new THREE.PointLight(0xffffff, 2, 50);
 pointLight.position.set(0, 5, 0);
 scene.add(pointLight);
 
-    const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
-    const streetMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
-    const street = new THREE.Mesh(streetGeometry, streetMaterial);
-    scene.add(street);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(0, 10, 5);
+scene.add(directionalLight);
+
+  const roadGeometry = new THREE.BoxGeometry(10, 0.1, 200); // Länge von 100 auf 200 erhöhen
+const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+const road = new THREE.Mesh(roadGeometry, roadMaterial);
+scene.add(road);
 
     const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -64,11 +68,25 @@ scene.add(pointLight);
     rightSidewalk.position.set(12.5, 0.05, 0);
     scene.add(rightSidewalk);
 
+    function createBuilding(x, z) {
+    const buildingGeometry = new THREE.BoxGeometry(5, 10, 5); // Größe des Gebäudes
+    const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x5555ff });
+    const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+    building.position.set(x, 5, z); // Position setzen
+    scene.add(building);
+}
+
+// Mehrere Gebäude an der Straße platzieren
+for (let i = -20; i <= 20; i += 10) {
+    createBuilding(7, i * 10); // Rechts
+}
+
     const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
         car.scale.set(0.5, 0.5, 0.5);
-        car.position.set(0, 0.1, 0);
+        car.position.set(0, 1, 0);
+        car.material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Testweise rot einfärben
         scene.add(car);
         console.log("Auto erfolgreich geladen:", car.position);
     }, undefined, function (error) {
