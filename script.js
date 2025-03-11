@@ -33,6 +33,13 @@ function startGame() {
 light.position.set(10, 20, 10); // Lichtquelle höher setzen
 scene.add(light);
 
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Heller machen
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 2, 50);
+pointLight.position.set(0, 5, 0);
+scene.add(pointLight);
+
     const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
     const streetMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
     const street = new THREE.Mesh(streetGeometry, streetMaterial);
@@ -91,17 +98,17 @@ function animate() {
 }
 
 document.addEventListener("keydown", function (event) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "s", "a", "d"].includes(event.key)) {
         event.preventDefault();
     }
-    if (event.key === "ArrowUp") carSpeed = 0.2;
-    if (event.key === "ArrowDown") carSpeed = -0.2;
-    if (event.key === "ArrowLeft") carTurnSpeed = 0.05;
-    if (event.key === "ArrowRight") carTurnSpeed = -0.05;
+    if (event.key === "ArrowUp" || event.key === "w") carSpeed = 0.2;
+    if (event.key === "ArrowDown" || event.key === "s") carSpeed = -0.2;
+    if (event.key === "ArrowLeft" || event.key === "a") carTurnSpeed = 0.02; // Reduzierte Drehgeschwindigkeit
+    if (event.key === "ArrowRight" || event.key === "d") carTurnSpeed = -0.02; // Reduzierte Drehgeschwindigkeit
 });
 
 document.addEventListener("keyup", function (event) {
-    if (["ArrowUp", "ArrowDown"].includes(event.key)) carSpeed = 0;
-    if (["ArrowLeft", "ArrowRight"].includes(event.key)) carTurnSpeed = 0;
+    if (["ArrowUp", "ArrowDown", "w", "s"].includes(event.key)) carSpeed = 0;
+    if (["ArrowLeft", "ArrowRight", "a", "d"].includes(event.key)) carTurnSpeed = 0;
 });
 
