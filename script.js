@@ -33,19 +33,8 @@ function startGame() {
 light.position.set(10, 20, 10); // Lichtquelle höher setzen
 scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Heller machen
-scene.add(ambientLight);
-
-const pointLight = new THREE.PointLight(0xffffff, 2, 50);
-pointLight.position.set(0, 5, 0);
-scene.add(pointLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-directionalLight.position.set(0, 10, 5);
-scene.add(directionalLight);
-
-  const roadGeometry = new THREE.BoxGeometry(10, 0.1, 200); // Länge von 100 auf 200 erhöhen
-const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const roadGeometry = new THREE.BoxGeometry(10, 0.1, 200); // Länge von 100 auf 200 erhöhen
+const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
 const road = new THREE.Mesh(roadGeometry, roadMaterial);
 scene.add(road);
 
