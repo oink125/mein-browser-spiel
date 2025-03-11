@@ -29,9 +29,9 @@ function startGame() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("gameContainer").appendChild(renderer.domElement);
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 10, 5);
-    scene.add(light);
+    const light = new THREE.DirectionalLight(0xffffff, 2); // Licht verdoppeln
+light.position.set(10, 20, 10); // Lichtquelle höher setzen
+scene.add(light);
 
     const streetGeometry = new THREE.BoxGeometry(20, 0.1, 200);
     const streetMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
