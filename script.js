@@ -22,7 +22,7 @@ function startGame() {
     scene = new THREE.Scene();
     
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, -10); // Höher und weiter hinten
+    camera.position.set(0, 20, -10)
     camera.lookAt(0, 1.5, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
