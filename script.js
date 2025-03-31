@@ -29,8 +29,8 @@ function startGame() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("gameContainer").appendChild(renderer.domElement);
 
-    const light = new THREE.DirectionalLight(0xffffff, 2); // Licht verdoppeln
-light.position.set(10, 20, 10); // Lichtquelle höher setzen
+    const light = new THREE.DirectionalLight(0xffffff, 5); // Licht verdoppeln
+light.position.set(10, 50, 10); // Lichtquelle höher setzen
 scene.add(light);
 
     const roadGeometry = new THREE.BoxGeometry(10, 0.1, 200); // Länge von 100 auf 200 erhöhen
