@@ -1,5 +1,6 @@
 let scene, camera, renderer;
-let car, carSpeed = 0, carTurnSpeed = 0;
+let car, carSpeed = 0, carAcceleration = 0.005, carMaxSpeed = 1, carTurnSpeed = 0;
+let friction = 0.98; // Verlangsamt das Auto allmählich
 
 document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("startButton");
@@ -22,7 +23,7 @@ function startGame() {
     scene = new THREE.Scene();
     
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 20, -10)
+    camera.position.set(0, 5, -10);
     camera.lookAt(0, 1.5, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -40,7 +41,7 @@ function startGame() {
     road.position.set(0, 0, 0);
     scene.add(road);
 
-    // Markierungen auf der Hauptstraße
+    // Straßenmarkierungen
     const stripeGeometry = new THREE.BoxGeometry(2, 0.1, 10);
     const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     for (let i = -90; i < 100; i += 20) {
@@ -49,24 +50,50 @@ function startGame() {
         scene.add(stripe);
     }
 
-    // Bürgersteige entlang der Hauptstraße
-    createSidewalk(-12.5, 0);
-    createSidewalk(12.5, 0);
+    // Bürgersteige
+    const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
+    const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
+    
+    const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    leftSidewalk.position.set(-7.5, 0.05, 0);
+    scene.add(leftSidewalk);
+    
+    const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    rightSidewalk.position.set(7.5, 0.05, 0);
+    scene.add(rightSidewalk);
 
-    // Gebäude neben der Straße
-    for (let i = -20; i <= 20; i += 10) {
-        createBuilding(7, i * 10);
+    // Abbiegung nach rechts (zusätzliche Straße)
+    const turnRoadGeometry = new THREE.BoxGeometry(100, 0.1, 10);
+    const turnRoad = new THREE.Mesh(turnRoadGeometry, roadMaterial);
+    turnRoad.position.set(50, 0, 100);
+    turnRoad.rotation.y = -Math.PI / 2;
+    scene.add(turnRoad);
+
+    // Markierungen für die Abbiegung
+    for (let i = 0; i < 100; i += 20) {
+        const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+        stripe.position.set(50 + i, 0.06, 100);
+        stripe.rotation.y = -Math.PI / 2;
+        scene.add(stripe);
     }
 
-    // Abbiegung erstellen
-    createIntersection();
+    // Bürgersteige für die Abbiegung
+    const turnSidewalkLeft = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    turnSidewalkLeft.position.set(50, 0.05, 107.5);
+    turnSidewalkLeft.rotation.y = -Math.PI / 2;
+    scene.add(turnSidewalkLeft);
+
+    const turnSidewalkRight = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    turnSidewalkRight.position.set(50, 0.05, 92.5);
+    turnSidewalkRight.rotation.y = -Math.PI / 2;
+    scene.add(turnSidewalkRight);
 
     // Auto laden
     const loader = new THREE.GLTFLoader();
     loader.load('models/car.glb', function (gltf) {
         car = gltf.scene;
         car.scale.set(0.5, 0.5, 0.5);
-        car.position.set(0, 1, -90);
+        car.position.set(0, 1, 0);
         scene.add(car);
     }, undefined, function (error) {
         console.error('Fehler beim Laden des Autos:', error);
@@ -75,53 +102,12 @@ function startGame() {
     animate();
 }
 
-function createSidewalk(x, z) {
-    const sidewalkGeometry = new THREE.BoxGeometry(5, 0.1, 200);
-    const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
-    const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
-    sidewalk.position.set(x, 0.05, z);
-    scene.add(sidewalk);
-}
-
-function createBuilding(x, z) {
-    const buildingGeometry = new THREE.BoxGeometry(5, 10, 5);
-    const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x5555ff });
-    const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-    building.position.set(x, 5, z);
-    scene.add(building);
-}
-
-function createIntersection() {
-    // Kreuzung
-    const intersectionGeometry = new THREE.BoxGeometry(20, 0.1, 20);
-    const intersectionMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
-    const intersection = new THREE.Mesh(intersectionGeometry, intersectionMaterial);
-    intersection.position.set(0, 0, 100);
-    scene.add(intersection);
-
-    // Rechte Abbiegung
-    const rightRoadGeometry = new THREE.BoxGeometry(200, 0.1, 10);
-    const rightRoad = new THREE.Mesh(rightRoadGeometry, intersectionMaterial);
-    rightRoad.position.set(100, 0, 110);
-    rightRoad.rotation.y = -Math.PI / 2;
-    scene.add(rightRoad);
-
-    // Markierungen in der Abbiegung
-    for (let i = 20; i < 120; i += 20) {
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        stripe.position.set(i, 0.06, 110);
-        scene.add(stripe);
-    }
-
-    // Bürgersteige an der Abbiegung
-    createSidewalk(110, 110);
-    createSidewalk(110, 115);
-}
-
 function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
+        // Geschwindigkeit aktualisieren mit Beschleunigung & Verzögerung
+        carSpeed *= friction;
         car.position.z += Math.cos(car.rotation.y) * carSpeed;
         car.position.x += Math.sin(car.rotation.y) * carSpeed;
         car.rotation.y += carTurnSpeed;
@@ -141,13 +127,16 @@ document.addEventListener("keydown", function (event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "s", "a", "d"].includes(event.key)) {
         event.preventDefault();
     }
-    if (event.key === "ArrowUp" || event.key === "w") carSpeed = 0.2;
-    if (event.key === "ArrowDown" || event.key === "s") carSpeed = -0.2;
+    if (event.key === "ArrowUp" || event.key === "w") {
+        if (carSpeed < carMaxSpeed) carSpeed += carAcceleration;
+    }
+    if (event.key === "ArrowDown" || event.key === "s") {
+        if (carSpeed > -carMaxSpeed / 2) carSpeed -= carAcceleration;
+    }
     if (event.key === "ArrowLeft" || event.key === "a") carTurnSpeed = 0.02;
     if (event.key === "ArrowRight" || event.key === "d") carTurnSpeed = -0.02;
 });
 
 document.addEventListener("keyup", function (event) {
-    if (["ArrowUp", "ArrowDown", "w", "s"].includes(event.key)) carSpeed = 0;
     if (["ArrowLeft", "ArrowRight", "a", "d"].includes(event.key)) carTurnSpeed = 0;
 });
